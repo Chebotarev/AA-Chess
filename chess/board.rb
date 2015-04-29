@@ -1,28 +1,36 @@
 require 'colorize'
-require_relative 'piece'
-require 'byebug'
+require_relative 'pieces'
+require_relative 'errors'
 
 class Board
 
   attr_reader :grid
 
-  def initialize
+  def initialize(setup = true)
     @grid = Array.new(8) { Array.new(8) }
 
-    populate_board
+    populate_board if setup
   end
 
   def move(start_pos, end_pos)
-    # debugger
-    raise ArgumentError unless piece_at(start_pos)
+    unless piece_at(start_pos)
+      raise NoPieceError.new("There is no piece at your starting point")
+    end
     current_piece = piece_at(start_pos)
-    if current_piece.moves.include?(end_pos)
+    if current_piece.valid_moves.include?(end_pos)
       self[start_pos] = nil
       self[end_pos] = current_piece
       current_piece.pos = end_pos
     else
-      raise "Can't move that piece there"
+      raise InvalidMoveError.new("That move is not valid!")
     end
+  end
+
+  def move!(start_pos, end_pos)
+    current_piece = piece_at(start_pos)
+    self[start_pos] = nil
+    self[end_pos] = current_piece
+    current_piece.pos = end_pos
   end
 
   def [](pos)
@@ -47,40 +55,68 @@ class Board
   end
 
   def checkmate?(color)
+    pieces(color).all? { |piece| piece.valid_moves.empty? } &&
+      in_check?(color)
   end
 
-  def check?(color)
+  def in_check?(color)
+    opponent_color = color == :white ? :black : :white
+    king_pos = king(color).pos
+    pieces(opponent_color).any? do |piece|
+      piece.moves.include?(king_pos)
+    end
   end
 
   def deep_dup
-  end
+    dup_board = Board.new(false)
 
-  def each_space(&do_to)
-    @grid.each_index do |i|
-      @grid[i].each_index do |j|
-        do_to.call(i, j, @grid[i][j])
+    [:white, :black].each do |color|
+      pieces(color).each do |piece|
+        duped_piece = piece.dup(dup_board)
+        dup_board[duped_piece.pos] = duped_piece
       end
     end
+
+    dup_board
   end
 
   def render
     system('clear')
-    print "  "
-    8.times { |x| print " #{x} "}
-    puts "\n"
-    each_space do |i, j, value|
-      print "#{i} " if j == 0
-      if value.nil?
-        print "   ".green.on_red
-      else
-        if self[[i, j]].color == :white
-          print " #{@grid[i][j].symbol} ".white.on_red
+    self.grid.each_with_index do |row, i|
+      row.each_with_index do |space, j|
+        if (i + j).odd?
+          if space.nil?
+            print "  ".on_red
+          else
+            if space.color == :white
+              print "#{space.symbol} ".white.on_red
+            else
+              print "#{space.symbol} ".black.on_red
+            end
+          end
         else
-          print " #{@grid[i][j].symbol} ".black.on_red
+          if space.nil?
+            print "  ".on_blue
+          else
+            if space.color == :white
+              print "#{space.symbol} ".white.on_blue
+            else
+              print "#{space.symbol} ".black.on_blue
+            end
+          end
         end
       end
-      puts if j == 7
+      puts
     end
+  end
+
+  def king(color)
+    pieces(color).find { |piece| piece.is_a?(King)}
+  end
+
+  def pieces(color)
+    pieces = @grid.flatten.compact
+    pieces.select { |piece| piece.color == color}
   end
 
   def populate_board
