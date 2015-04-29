@@ -1,6 +1,6 @@
 class Piece
   attr_reader :color
-  attr_writer :pos
+  attr_accessor :pos
 
   def initialize(board, color, pos)
     @board = board
@@ -10,7 +10,21 @@ class Piece
   end
 
   def symbol
-    raise NotImplementedError.new
+    raise NotImplementedError.new ("No symbol!")
+  end
+
+  def dup(dup_board)
+    self.class.new(dup_board, @color, @pos.dup)
+  end
+
+  def valid_moves
+    moves.reject { |move| move_into_check?(move) }
+  end
+
+  def move_into_check?(move)
+    duped_board = @board.deep_dup
+    duped_board.move!(self.pos, move)
+    duped_board.in_check?(@color)
   end
 end
 
@@ -67,11 +81,7 @@ end
 
 class Pawn < Piece
   def symbol
-    if self.color == :white
-      '♙'
-    else
-      '♟'
-    end
+    '♟'
   end
 
   def moves
@@ -100,11 +110,7 @@ end
 
 class Rook < SlidingPiece
   def symbol
-    if self.color == :white
-      '♖'
-    else
-      '♜'
-    end
+    '♜'
   end
 
   def move_dirs
@@ -119,11 +125,7 @@ end
 
 class Bishop < SlidingPiece
   def symbol
-    if self.color == :white
-      '♗'
-    else
-      '♝'
-    end
+    '♝'
   end
 
   def move_dirs
@@ -136,11 +138,7 @@ end
 
 class Queen < SlidingPiece
   def symbol
-    if self.color == :white
-      '♕'
-    else
-      '♛'
-    end
+    '♛'
   end
 
   def move_dirs
@@ -157,11 +155,7 @@ end
 
 class King < SteppingPiece
   def symbol
-    if self.color == :white
-      '♔'
-    else
-      '♚'
-    end
+    '♚'
   end
 
   def move_diffs
@@ -180,11 +174,7 @@ end
 
 class Knight < SteppingPiece
   def symbol
-    if self.color == :white
-      '♘'
-    else
-      '♞'
-    end
+    '♞'
   end
 
   def move_diffs
