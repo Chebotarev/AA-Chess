@@ -13,7 +13,6 @@ class Board
   end
 
   def move(start_pos, end_pos, color)
-    # every single move-related exception gets handled here
     raise OffBoardError unless on_board?(start_pos) && on_board?(end_pos)
     raise NoPieceError unless piece_at(start_pos)
     raise WrongColorError unless piece_at(start_pos).color == color

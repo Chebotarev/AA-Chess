@@ -62,8 +62,8 @@ class Game
 end
 
 if __FILE__ == $PROGRAM_NAME
-  player1 = HumanPlayer.new(:white)
-  player2 = ComputerPlayer.new(:black)
+  player1 = ComputerPlayer.new(:white)
+  player2 = HumanPlayer.new(:black)
   game = Game.new(player1, player2)
   game.play
 end
