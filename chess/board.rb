@@ -89,39 +89,31 @@ class Board
   end
 
   def render
-    system('clear')
-    print "  " + ('a'..'h').to_a.join(" ") + "\n"
-    self.grid.each_with_index do |row, i|
-      print "#{i + 1} "
-      row.each_with_index do |space, j|
-        if (i + j).odd?
-          if space.nil?
-            print "  ".on_red
+      system('clear')
+      print "   " + ('a'..'h').to_a.join(" ") + "\n"
+      self.grid.each_with_index do |row, i|
+        print "#{i + 1} "
+        row.each_with_index do |space, j|
+          if @cursor == [i,j]
+            background = :yellow
+          elsif (i + j).odd?
+            background = :light_black
           else
-            if space.color == :white
-              print "#{space.symbol} ".white.on_red
-            else
-              print "#{space.symbol} ".black.on_red
-            end
+            background = :light_blue
           end
-        else
+
           if space.nil?
-            print "  ".on_blue
+            print '  '.colorize(:background => background)
           else
-            if space.color == :white
-              print "#{space.symbol} ".white.on_blue
-            else
-              print "#{space.symbol} ".black.on_blue
-            end
+            print "#{space.symbol} ".colorize(:color => space.color,
+              :background => background)
           end
         end
+        print " #{i + 1}"
+        puts
       end
-      print " #{i + 1}"
-      puts
+      print "  " + ('a'..'h').to_a.join(" ") + "\n"
     end
-    print "  " + ('a'..'h').to_a.join(" ") + "\n"
-  end
-  # end
 
   def king(color)
     pieces(color).find { |piece| piece.is_a?(King)}
