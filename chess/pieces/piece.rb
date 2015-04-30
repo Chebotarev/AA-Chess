@@ -2,10 +2,10 @@ class Piece
   attr_reader :color
   attr_accessor :pos, :moved
 
-  def initialize(board, color, pos)
-    @board = board
-    @color = color
-    @pos = pos
+  def initialize(params)
+    @board = params[:board]
+    @color = params[:color]
+    @pos = params[:pos]
     @moved = false
   end
 
@@ -14,7 +14,7 @@ class Piece
   end
 
   def dup(dup_board)
-    self.class.new(dup_board, @color, @pos.dup)
+    self.class.new(board: dup_board, color: @color, pos: @pos.dup)
   end
 
   def valid_moves

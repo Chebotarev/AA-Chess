@@ -42,8 +42,7 @@ class Board
   end
 
   def on_board?(pos)
-    # pos.all? { |el| el.between?(0, 7) }
-    (pos[0]).between?(0, 7) && (pos[1]).between?(0, 7)
+    pos.all? { |el| el.between?(0, 7) }
   end
 
   def occupied?(pos)
@@ -141,29 +140,31 @@ class Board
 
     [[1,:white], [6, :black]].each do |row|
       @grid[row.first].map!.with_index do |space, i|
-        Pawn.new(self, row.last, [row.first, i])
+
+        Pawn.new(board: self, color: row.last, pos: [row.first, i])
       end
     end
 
     [[0, :white], [7, :black]].each do |row|
       @grid[row.first].map!.with_index do |space, i|
+        params = { board: self, color: row.last, pos: [row.first, i] }
         case i
         when 0
-          Rook.new(self, row.last, [row.first, i])
+          Rook.new(params)
         when 1
-          Knight.new(self, row.last, [row.first, i])
+          Knight.new(params)
         when 2
-          Bishop.new(self, row.last, [row.first, i])
+          Bishop.new(params)
         when 3
-          King.new(self, row.last, [row.first, i])
+          King.new(params)
         when 4
-          Queen.new(self, row.last, [row.first, i])
+          Queen.new(params)
         when 5
-          Bishop.new(self, row.last, [row.first, i])
+          Bishop.new(params)
         when 6
-          Knight.new(self, row.last, [row.first, i])
+          Knight.new(params)
         when 7
-          Rook.new(self, row.last, [row.first, i])
+          Rook.new(params)
         end
       end
     end
