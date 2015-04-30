@@ -31,11 +31,14 @@ class Game
     until @board.won? || @board.stalemate?(@current_player.color)
       begin
         board.render
+        if @board.in_check?(@current_player.color)
+          puts "#{@current_player.color.to_s.capitalize} is in check"
+        end
         puts "#{@current_player.color.to_s.capitalize}'s turn"
         move_pos = @current_player.make_move
         start_pos, end_pos = move_pos
 
-        
+
 
         @board.move(start_pos, end_pos, @current_player.color)
         switch_player
