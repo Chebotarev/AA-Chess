@@ -1,6 +1,11 @@
 require_relative 'piece'
 
 class Pawn < Piece
+  NORMAL_MOVE = [1, 0]
+  INITIAL_MOVE = [2, 0]
+  ATTACK_MOVES = [[1, 1], [1, -1]]
+
+
   def symbol
     '♟'
   end
@@ -9,22 +14,23 @@ class Pawn < Piece
     moves = []
     modifier = self.color == :white ? 1 : -1
 
-    [-1, 1].each do |el|
-      potential_pos = [@pos.first + modifier, @pos.last + el]
-      if @board.occupied?(potential_pos) &&
-                 @board.piece_at(potential_pos).color != self.color
-        moves << potential_pos.dup
-      end
+    normal_move = sum_positions(NORMAL_MOVE.map { |move| move * modifier }, @pos)
+    unless @board.occupied?(normal_move)
+      moves << normal_move
     end
-    potential_pos = [@pos.first + modifier, @pos.last]
 
-    unless @board.occupied?(potential_pos)
-      moves  << potential_pos.dup
-      potential_pos[0] = potential_pos.first + modifier
-      unless @moved && @board.occupied?(potential_pos)
-        moves << potential_pos.dup
+    initial_move = sum_positions(INITIAL_MOVE.map { |move| move * modifier }, @pos)
+    if !@moved && moves.include?(normal_move) && !@board.occupied?(initial_move)
+      moves << initial_move
+    end
+
+    ATTACK_MOVES.each do |attack_move|
+      potential_pos = sum_positions(@pos.dup, attack_move.map { |x| x * modifier })
+      if @board.occupied?(potential_pos) && !@board.piece_at(potential_pos).color == @color
+        moves << potential_pos
       end
     end
-    moves
+
+    moves.select { |move| @board.on_board?(move)}
   end
 end
