@@ -27,19 +27,19 @@ class Game
     end
   end
 
+  def game_status
+    if @board.in_check?(@current_player.color)
+      puts "#{@current_player.color.to_s.capitalize} is in check"
+    end
+    puts "#{@current_player.color.to_s.capitalize}'s turn"
+  end
+
   def play
     until @board.won? || @board.stalemate?(@current_player.color)
       begin
         board.render
-        if @board.in_check?(@current_player.color)
-          puts "#{@current_player.color.to_s.capitalize} is in check"
-        end
-        puts "#{@current_player.color.to_s.capitalize}'s turn"
-        move_pos = @current_player.make_move
-        start_pos, end_pos = move_pos
-
-
-
+        game_status
+        start_pos, end_pos = @current_player.make_move
         @board.move(start_pos, end_pos, @current_player.color)
         switch_player
       rescue MoveError => e
