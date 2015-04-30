@@ -1,4 +1,3 @@
-require 'byebug'
 class ComputerPlayer
   attr_reader :color
   attr_writer :board
@@ -21,7 +20,7 @@ class ComputerPlayer
         good_moves << [start_pos, potential_pos] if @board.piece_at(potential_pos)
       end
     end
-    #sleep(0.2)
+    sleep(0.2)
 
     chosen_move = good_moves.empty? ? random_move : good_moves.sample
     p chosen_move

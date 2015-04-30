@@ -25,8 +25,8 @@ class Pawn < Piece
     end
 
     ATTACK_MOVES.each do |attack_move|
-      potential_pos = sum_positions(@pos.dup, attack_move.map { |x| x * modifier })
-      if @board.occupied?(potential_pos) && !@board.piece_at(potential_pos).color == @color
+      potential_pos = sum_positions(@pos.dup, attack_move.map { |move| move * modifier })
+      if @board.occupied?(potential_pos) && @board.piece_at(potential_pos).color != @color
         moves << potential_pos
       end
     end
