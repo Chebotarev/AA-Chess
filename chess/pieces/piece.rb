@@ -1,6 +1,6 @@
 class Piece
   attr_reader :color
-  attr_accessor :pos
+  attr_accessor :pos, :moved
 
   def initialize(board, color, pos)
     @board = board
@@ -25,5 +25,9 @@ class Piece
     duped_board = @board.deep_dup
     duped_board.move!(self.pos, move)
     duped_board.in_check?(@color)
+  end
+
+  def sum_positions(pos1, pos2)
+    [pos1.first + pos2.first, pos1.last + pos2.last]
   end
 end
