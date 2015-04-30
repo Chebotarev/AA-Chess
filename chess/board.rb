@@ -66,7 +66,7 @@ class Board
 
   def checkmate?(color)
     pieces(color).all? { |piece| piece.valid_moves.empty? } &&
-      in_check?(color)
+    in_check?(color)
   end
 
   def in_check?(color)
@@ -96,105 +96,82 @@ class Board
     self.grid.each_with_index do |row, i|
       print "#{i + 1} "
       row.each_with_index do |space, j|
-          if (i + j).odd?
-            if space.nil?
-              print "  ".on_red
-            else
-              if space.color == :white
-                print "#{space.symbol} ".white.on_red
-              else
-                print "#{space.symbol} ".black.on_red
-              end
-            end
+        if (i + j).odd?
+          if space.nil?
+            print "  ".on_red
           else
-            if space.nil?
-              print "  ".on_blue
+            if space.color == :white
+              print "#{space.symbol} ".white.on_red
             else
-              if space.color == :white
-                print "#{space.symbol} ".white.on_blue
-              else
-                print "#{space.symbol} ".black.on_blue
-              end
+              print "#{space.symbol} ".black.on_red
+            end
+          end
+        else
+          if space.nil?
+            print "  ".on_blue
+          else
+            if space.color == :white
+              print "#{space.symbol} ".white.on_blue
+            else
+              print "#{space.symbol} ".black.on_blue
             end
           end
         end
-        print " #{i + 1}"
-        puts
       end
-      print "  " + ('a'..'h').to_a.join(" ") + "\n"
+      print " #{i + 1}"
+      puts
     end
+    print "  " + ('a'..'h').to_a.join(" ") + "\n"
+  end
   # end
 
-    def king(color)
-      pieces(color).find { |piece| piece.is_a?(King)}
-    end
-
-    def pieces(color)
-      pieces = @grid.flatten.compact
-      pieces.select { |piece| piece.color == color}
-    end
-
-    def populate_board
-      # Stalemate test case
-      # @grid[0][7] = King.new(self, :black, [0,7])
-      # @grid[2][6] = Queen.new(self, :white, [2,6])
-      # @grid[2][5] = King.new(self, :white, [2, 5])
-
-      @grid[1].map!.with_index do |space, i|
-        Pawn.new(self, :white, [1, i])
-      end
-
-      @grid[0].map!.with_index do |space, i|
-        case i
-        when 0
-          Rook.new(self, :white, [0, i])
-        when 1
-          Knight.new(self, :white, [0, i])
-        when 2
-          Bishop.new(self, :white, [0, i])
-        when 3
-          King.new(self, :white, [0, i])
-        when 4
-          Queen.new(self, :white, [0,i])
-        when 5
-          Bishop.new(self, :white, [0, i])
-        when 6
-          Knight.new(self, :white, [0, i])
-        when 7
-          Rook.new(self, :white, [0, i])
-        end
-      end
-
-      @grid[7].map!.with_index do |space, i|
-        case i
-        when 0
-          Rook.new(self, :black, [7, i])
-        when 1
-          Knight.new(self, :black, [7, i])
-        when 2
-          Bishop.new(self, :black, [7, i])
-        when 3
-          King.new(self, :black, [7, i])
-        when 4
-          Queen.new(self, :black, [7,i])
-        when 5
-          Bishop.new(self, :black, [7, i])
-        when 6
-          Knight.new(self, :black, [7, i])
-        when 7
-          Rook.new(self, :black, [7, i])
-        end
-      end
-
-      @grid[6].map!.with_index do |space, i|
-        Pawn.new(self, :black, [6, i])
-      end
-
-    end
-
+  def king(color)
+    pieces(color).find { |piece| piece.is_a?(King)}
   end
 
-  if __FILE__ == $PROGRAM_NAME
-    board = Board.new
-    board.render
+  def pieces(color)
+    pieces = @grid.flatten.compact
+    pieces.select { |piece| piece.color == color}
   end
+
+  def populate_board
+    # Stalemate test case
+    # @grid[0][7] = King.new(self, :black, [0,7])
+    # @grid[2][6] = Queen.new(self, :white, [2,6])
+    # @grid[2][5] = King.new(self, :white, [2, 5])
+
+    [[1,:white], [6, :black]].each do |row|
+      @grid[row.first].map!.with_index do |space, i|
+        Pawn.new(self, row.last, [row.first, i])
+      end
+    end
+
+    [[0, :white], [7, :black]].each do |row|
+      @grid[row.first].map!.with_index do |space, i|
+        case i
+        when 0
+          Rook.new(self, row.last, [row.first, i])
+        when 1
+          Knight.new(self, row.last, [row.first, i])
+        when 2
+          Bishop.new(self, row.last, [row.first, i])
+        when 3
+          King.new(self, row.last, [row.first, i])
+        when 4
+          Queen.new(self, row.last, [row.first, i])
+        when 5
+          Bishop.new(self, row.last, [row.first, i])
+        when 6
+          Knight.new(self, row.last, [row.first, i])
+        when 7
+          Rook.new(self, row.last, [row.first, i])
+        end
+      end
+    end
+  end
+end
+
+if __FILE__ == $PROGRAM_NAME
+  board = Board.new
+  board.render
+end
