@@ -132,7 +132,6 @@ class Board
 
     [[1,:white], [6, :black]].each do |row|
       @grid[row.first].map!.with_index do |space, i|
-
         Pawn.new(board: self, color: row.last, pos: [row.first, i])
       end
     end
